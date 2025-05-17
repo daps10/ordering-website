@@ -3,22 +3,25 @@ import axios from 'axios';
 import styles from '../styles/Home.module.css';
 import Items from '../components/Items';
 import Cart from '../components/Cart';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
   const [items, setItems] = useState([]);
   const [search, setSearch] = useState('');
   const [cart, setCart] = useState([]);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchItems = async () => {
+      setLoading(true);
       try {
         const res = await axios.get('http://localhost:5000/api/items');
         setItems(res.data);
-        setError('');
       } catch (err) {
-        setError('Failed to fetch items. Please try again later.');
+        toast.error('Failed to fetch items. Please try again later.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -26,50 +29,48 @@ export default function Home() {
   }, []);
 
   const handleSearch = async () => {
-     try {
-      const res = await axios.post(`http://localhost:5000/api/items/search?query=${search}`);
-      setItems(res.data);
-      setError('');
-    } catch (err) {
-      setError('Search failed. Please check your input or try again later.');
-    }
-  };
+    const fetchItems = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get('http://localhost:5000/api/items');
+        setItems(res.data);
+      } catch (err) {
+        toast.error('Failed to fetch items. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleChatQuery = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/api/chat', {
-        params: { message }
-      });
-      setItems(res.data);
-      setError('');
-    } catch (err) {
-      setError('Chat query failed. Please try again later.');
-    }
+    fetchItems();
   };
 
   const addToCart = (item) => {
     setCart([...cart, item]);
+    toast.success(`${item.title} added to cart`);
   };
 
   const removeFromCart = (sku) => {
+    const removed = cart.find(item => item.sku === sku);
     setCart(cart.filter(item => item.sku !== sku));
+    if (removed) toast.info(`${removed.title} removed from cart`);
   };
 
   return (
     <div className={styles.container}>
+      <ToastContainer position="top-center" autoClose={3000} />
       <div className={styles.searchBar}>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search SKU or Title" />
         <button onClick={handleSearch}>Search</button>
       </div>
 
-      <div className={styles.searchBar}>
-        <input value={message} onChange={e => setMessage(e.target.value)} placeholder="Ask a question (e.g. under $50, sku ABC123)" />
-        <button onClick={handleChatQuery}>Ask</button>
-      </div>
-
-    {error && <div className={styles.error}>{error}</div>}
-      <Items items={items} addToCart={addToCart} />
-      <Cart cart={cart} removeFromCart={removeFromCart} />
+      {loading ? (
+        <div className={styles.loading}>Loading...</div>
+      ) : (
+        <>
+          <Items items={items} addToCart={addToCart} />
+          <Cart cart={cart} removeFromCart={removeFromCart} />
+        </>
+      )}
     </div>
   );
 }
