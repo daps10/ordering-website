@@ -8,7 +8,7 @@ import {
 const router= express.Router();
 
 router.get('/items', getAllItems);
-router.post('/items/search', searchItems);
-router.get('/chat', chatSearch);
+router.get('/items/search', searchItems);
+router.post('/chat', chatSearch);
 
 export default router;
