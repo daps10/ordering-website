@@ -27,3 +27,23 @@ npm install
 npm run build
 npm start
 ```
+
+### Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### MONGOURI:
+
+```bash
+MONGO_URI=your-mongodb-uri
+```
+
+### SEED DB:
+
+```bash
+npm run seed
+```
