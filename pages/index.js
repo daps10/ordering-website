@@ -17,6 +17,14 @@ const App= () => {
     setItems(res.data);
   }
 
+  const addToCart= async(item) => {
+    setCart([...cart, item]);
+  }
+
+  const removeFromCart= async(sku) => {
+    setCart(cart.filter(item => item.sku !== sku));
+  }
+
   return (
     <div className="p-4">
       <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search SKU or Title"/>
@@ -28,6 +36,18 @@ const App= () => {
             <img src={item.image} alt={item.title} width={100}/>
             <h3>{item.title}</h3>
             <p>${item.price}</p>
+            <button onClick={() => addToCart(item)}>ADD TO CART</button>
+          </div>
+        ))
+      }
+
+      <h2>Cart</h2>
+      {
+        cart.map((item) => (
+          <div key={item.sku} className="border p-2 m-2">
+            <h3>{item.title}</h3>
+            <p>${item.price}</p>
+            <button onClick={() => removeFromCart(item.sku)}>Remove</button>
           </div>
         ))
       }
