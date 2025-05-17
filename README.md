@@ -36,10 +36,11 @@ npm install
 npm run dev
 ```
 
-### MONGOURI:
+### Set .env:
 
 ```bash
 MONGO_URI=your-mongodb-uri
+PORT=5000
 ```
 
 ### SEED DB:
