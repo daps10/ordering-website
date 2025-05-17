@@ -3,7 +3,7 @@
     "target": "ES6",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "backend/src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -21,7 +21,7 @@
     "jsx": "preserve"
   },
   "include": [
-    "src"
+    "backend/src"
   ],
   "exclude": [
     "node_modules"
