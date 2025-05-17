@@ -11,22 +11,26 @@ export default function Home() {
   const [search, setSearch] = useState('');
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    const fetchItems = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get('http://localhost:5000/api/items');
-        setItems(res.data);
-      } catch (err) {
-        toast.error('Failed to fetch items. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchItems();
-  }, []);
+  }, [page]);
+
+  const fetchItems = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`http://localhost:5000/api/items?page=${page}&limit=6`);
+      setItems(res.data.items);
+      setTotalPages(res.data.totalPages);
+    } catch (err) {
+      toast.error('Failed to fetch items');
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleSearch = async () => {
     const fetchItems = async () => {
@@ -69,6 +73,11 @@ export default function Home() {
         <>
           <Items items={items} addToCart={addToCart} />
           <Cart cart={cart} removeFromCart={removeFromCart} />
+          <div className={styles.pagination}>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>Previous</button>
+            <span>Page {page} of {totalPages}</span>
+            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Next</button>
+          </div>
         </>
       )}
     </div>

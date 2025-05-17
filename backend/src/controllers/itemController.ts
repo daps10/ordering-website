@@ -2,9 +2,20 @@ import { Request, Response } from "express";
 import Item from "../models/Item";
 
 
-export const getAllItems= async(_req: Request, res: Response) => {
-  const items= await Item.find();
-  res.json(items);
+export const getAllItems= async(req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+
+  try {
+    const total = await Item.countDocuments();
+    const items = await Item.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+    
+    res.json({ items, total, page, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching items' });
+  }
 }
 
 export const searchItems= async(req: Request, res: Response) => {
